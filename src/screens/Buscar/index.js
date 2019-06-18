@@ -30,38 +30,39 @@ buscarMusica = () => {
     render() { 
         return ( 
         <Fundo>
-            <View style={{alignItems: 'center', marginTop: 20, flex:1}}>    
-                <TextInput 
-                    style={{width: '80%', height: 40, backgroundColor: '#ddd'}}
-                    keyboardType="text"
-                    placeholder="Música..."
-                    onChangeText={(musica) => this.setState({musica: musica})}
-                />
-                <TouchableOpacity onPress={this.buscarMusica} style={{marginTop: 10}}>
-                    <Icon name="search" size={25} color="#ddd" />
-                </TouchableOpacity>
+            <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+                <View style={{alignItems: 'center', justifyContent:'center', backgroundColor: '#ddd', width: '82%', height:40, marginTop: 20, flexDirection:'row' }}>    
+                    <TextInput 
+                        style={{width: '80%', height: 40, backgroundColor: '#ddd'}}
+                        keyboardType="text"
+                        placeholder="Música..."
+                        onChangeText={(musica) => this.setState({musica: musica})}
+                    />
+                    <TouchableOpacity onPress={this.buscarMusica} style={{marginTop: 0}}>
+                        <Icon name="search" size={25} color="#333" />
+                    </TouchableOpacity>
+                </View>
+            </View>    
+
             <FlatList
+                    style={{marginTop: 5}}
                     data={this.state.data_musicas}
                     showsVerticalScrollIndicator={false}
                     renderItem={({item}) =>
                     
-                        <View style={{flex: 1, justifyContent: "center", alignItems: "center", width: '95%', borderWidth: 21}}>
-                            <Text style={{color: "#fff"}}>{item.title_short}</Text>
+                    <View style={{flexDirection: 'row', justifyContent: "center", alignItems: "center", width: '100%', borderWidth: 1}}>
+                        <View style={{paddingVertical:10, paddingHorizontal: 25}}>
+                            <Text style={{color: "#fff"}}>
+                                <Icon name="play" size={25} color="#555" />{item.title_short}
+                            </Text>
                             <Text style={{color: "#fff"}}>Duração: {item.duration} seg</Text>
                             <Text style={{color: "#fff"}}>Ranking: {item.rank}</Text>
                             <Text style={{color: "#fff"}}>{item.artist.name}</Text>
-
-                            <TouchableOpacity>
-                                <Icon name="play" size={25} color="#555" />
-                            </TouchableOpacity>
                         </View>
-                    
+                    </View>
                     }
                     keyExtractor={item => item.id}
-                />   
-                    
-                
-            </View>
+                />  
         </Fundo>
         );
     }

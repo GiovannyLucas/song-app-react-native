@@ -10,7 +10,7 @@ import { createAppContainer, navigateAction, createStackNavigator, createBottomT
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 import axios from "axios";
-import { FlatList, TouchableOpacity } from 'react-native-gesture-handler';
+import { FlatList, TouchableOpacity, TextInput } from 'react-native-gesture-handler';
 
 class App extends Component {
     state = {
@@ -19,7 +19,7 @@ class App extends Component {
     }
 
 componentWillMount(){
-    axios.get('https://api.deezer.com/search?q=album:"a"')
+    axios.get('https://api.deezer.com/search?q=album:"adios"')
     .then(res => {
         this.setState({ data_albuns: res.data.data })
     })
@@ -44,8 +44,34 @@ componentWillMount(){
                     <Image style={{width: 300, height: 60}} source={require("./src/img/logo.png")} />
                 </View>
 
-               
-                <Text style={styles.titulo}>Álbuns</Text>
+              <View style={{ flexDirection:'row' }}> 
+                <Text style={styles.titulo}>Álbuns -> </Text>
+                <TextInput 
+                    style={{ width: '50%', height:40, marginTop: 5, backgroundColor:'#fff' }}
+                    keyboardType="text"
+                    placeholder="Ex.: Adios"
+                    onChangeText={((album) => {
+                      if(!album == ''){
+                        axios.get(`https://api.deezer.com/search?q=album:"${album}"`)
+                        .then(res => {
+                            this.setState({ data_albuns: res.data.data })
+                        })
+                        .catch((err) => {
+                            alert(err);
+                        })
+                      } else {
+                        axios.get(`https://api.deezer.com/search?q=artist:"adios"`)
+                        .then(res => {
+                            this.setState({ data_artistas: res.data.data })
+                        })
+                        .catch((err) => {
+                            alert(err);
+                        })
+                      }
+                      
+                    })}
+                  />
+                </View>
 
                 <FlatList
                     data={this.state.data_albuns}
@@ -54,15 +80,45 @@ componentWillMount(){
                     renderItem={({item}) =>
                     
                         <View style={{flex: 1, justifyContent: "center", alignItems: "center"}}>
-                            <Image source={{uri: item.artist.picture_big}} style={{width: 110, height: 100, margin: 10}} />
-                            <Text style={{color: "#fff"}}>{item.title_short}</Text>
+                            <Image source={{uri: item.album.cover_big}} style={{width: 110, height: 100, marginLeft: 20, marginRight: 20}} />
+                            <TouchableOpacity onPress={() => {
+                                this.props.navigation.navigate('Detalhes', { id: item.album.id, tipo: 'album' })
+                            }}>  
+                            <Text style={{color: "#fff"}}>{item.album.title}</Text>
+                            </TouchableOpacity>
                         </View>
                     
                     }
                     keyExtractor={item => item.id}
                 />
-
-                <Text style={styles.titulo}>Artistas</Text>
+                <View style={{ flexDirection:'row' }}>
+                  <Text style={styles.titulo}>Artistas -> </Text>
+                  <TextInput 
+                    style={{ width: '50%', height:40, marginTop: 5, backgroundColor:'#fff' }}
+                    keyboardType="text"
+                    placeholder="Ex.: Alok"
+                    onChangeText={((artista) => {
+                      if(!artista == ''){
+                        axios.get(`https://api.deezer.com/search?q=artist:"${artista}"`)
+                        .then(res => {
+                            this.setState({ data_artistas: res.data.data })
+                        })
+                        .catch((err) => {
+                            alert(err);
+                        })
+                      } else {
+                        axios.get(`https://api.deezer.com/search?q=artist:"a"`)
+                        .then(res => {
+                            this.setState({ data_artistas: res.data.data })
+                        })
+                        .catch((err) => {
+                            alert(err);
+                        })
+                      }
+                      
+                    })}
+                  />
+                </View>
 
                 <FlatList
                     data={this.state.data_artistas}
@@ -73,9 +129,9 @@ componentWillMount(){
                         <View style={{flex: 1, justifyContent: "center", alignItems: "center"}}>
                             <Image source={{uri: item.artist.picture_big}} style={{width: 110, height: 100, margin: 10}} />
                         <TouchableOpacity onPress={() => {
-                            navigator.navigate('Detalhes', { albumid: item.id })
+                            this.props.navigation.navigate('Detalhes', { id: item.artist.id, tipo: 'artist' })
                         }}>
-                            <Text style={{color: "#fff"}}>{item.title}</Text>
+                            <Text style={{color: "#fff"}}>{item.artist.name}</Text>
                         </TouchableOpacity>
                         
                         
@@ -111,7 +167,9 @@ const styles = StyleSheet.create({
     },
     titulo: {
         color: '#fff',
-        fontSize: 18
+        fontSize: 20,
+        marginLeft: 10,
+        marginTop: 10
     }
 });
 
